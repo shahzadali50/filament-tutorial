@@ -29,7 +29,9 @@ class StateRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
+                Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('name'),
+
             ])
             ->filters([
                 //

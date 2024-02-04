@@ -17,6 +17,7 @@ use App\Filament\Resources\CountryResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CountryResource\RelationManagers;
 use App\Filament\Resources\CountryResource\RelationManagers\StateRelationManager;
+use App\Filament\Resources\CountryResource\RelationManagers\EmployeesRelationManager;
 
 class CountryResource extends Resource
 {
@@ -73,7 +74,8 @@ class CountryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                ->searchable(),
 
                 Tables\Columns\TextColumn::make('code'),
 
@@ -98,6 +100,8 @@ class CountryResource extends Resource
     {
         return [
             StateRelationManager::class,
+            EmployeesRelationManager::class,
+
         ];
     }
 
