@@ -40,65 +40,65 @@ class EmployeeResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('User Name')
-                ->description('put the user name Detail')
-                ->schema([
-                    Forms\Components\TextInput::make('first_name')
+                    ->description('put the user name Detail')
+                    ->schema([
+                        Forms\Components\TextInput::make('first_name')
+                            ->required()
+                            ->maxLength(255)
+                            ->label('first-name'),
+                        Forms\Components\TextInput::make('last_name')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('middle_name')
+                            ->required()
+                            ->maxLength(255),
+
+                    ])->columns(3),
+                Select::make('country_id')
+                    ->relationship(name: 'country', titleAttribute: 'name')
+                    ->preload()
+                    ->live()
+                    ->searchable()
                     ->required()
-                    ->maxLength(255)
-                    ->label('first-name'),
-                Forms\Components\TextInput::make('last_name')
+                    ->afterStateUpdated(
+                        function (Set $set) {
+                            $set('state_id', null);
+                            $set('city_id', null);
+                        }
+                    ),
+
+                Select::make('state_id')
+                    ->options(
+                        fn(Get $get)
+                        => State::query()
+                            ->where('country_id', $get('country_id'))
+                            ->pluck('name', 'id')
+
+                    )
+                    ->preload()
+                    ->live()
+                    ->searchable()
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('middle_name')
-                    ->required()
-                    ->maxLength(255),
+                    ->afterStateUpdated(
+                        fn(Set $set) => $set('city_id', null)
+                    )
+                ,
 
-                ])->columns(3),
-                    Select::make('country_id')
-                        ->relationship(name:'country',titleAttribute:'name')
-                        ->preload()
-                        ->live()
-                        ->searchable()
-                        ->required()
-                        ->afterStateUpdated(
-                            function(Set $set){
-                            $set('state_id',null);
-                            $set('city_id',null);
-                            }
-                        ),
+                Select::make('city_id')
+                    ->options(
+                        fn(Get $get)
+                        => City::query()
+                            ->where('state_id', $get('state_id'))
+                            ->pluck('name', 'id')
+                    )
+                    ->preload()
+                    ->live()
+                    ->searchable()
+                    ->required(),
 
-                    Select::make('state_id')
-                        ->options(
-                            fn(Get $get)
-                            =>State::query()
-                            ->where('country_id',$get('country_id'))
-                            ->pluck('name','id')
-
-                        )
-                        ->preload()
-                        ->live()
-                        ->searchable()
-                        ->required()
-                        ->afterStateUpdated(
-                            fn(Set $set) => $set('city_id',null)
-                        )
-                        ,
-
-                        Select::make('city_id')
-                        ->options(
-                            fn(Get $get)
-                            =>City::query()
-                            ->where('state_id',$get('state_id'))
-                            ->pluck('name','id')
-                        )
-                        ->preload()
-                        ->live()
-                        ->searchable()
-                        ->required(),
-
-                        Select::make('department_id')
-                        ->relationship('department','name')
-                        ->required(),
+                Select::make('department_id')
+                    ->relationship('department', 'name')
+                    ->required(),
 
 
                 Forms\Components\TextInput::make('address')
@@ -112,8 +112,8 @@ class EmployeeResource extends Resource
                     ->displayFormat('d/m/Y')
                     ->required(),
                 Forms\Components\DatePicker::make('date_of_hire')
-                ->native(false)
-                ->displayFormat('d/m/Y')
+                    ->native(false)
+                    ->displayFormat('d/m/Y')
                     ->required(),
             ])->columns(3);
     }
@@ -121,42 +121,42 @@ class EmployeeResource extends Resource
     {
         return $infolist
 
-        ->schema([
-            Section::make('Employee Info')
-        ->schema([
+            ->schema([
+                Section::make('Employee Info')
+                    ->schema([
 
-            TextEntry::make('first_name')->label('first_name'),
-            TextEntry::make('middle_name')->label('middle_name'),
-            TextEntry::make('last_name')->label('last_name'),
-
-
-
-
-        ])->columns(3),
-        Section::make('Relationship')
-        ->schema([
-
-            TextEntry::make('country.name')->label('country'),
-            TextEntry::make('state.name')->label('state'),
-            TextEntry::make('city.name')->label('city'),
+                        TextEntry::make('first_name')->label('first_name'),
+                        TextEntry::make('middle_name')->label('middle_name'),
+                        TextEntry::make('last_name')->label('last_name'),
 
 
 
 
-        ])->columns(3),
-        Section::make('User Adress')
-        ->schema([
+                    ])->columns(3),
+                Section::make('Relationship')
+                    ->schema([
 
-            TextEntry::make('address')->label('address'),
-            TextEntry::make('zip_code')->label('zip_code'),
-
-
-
+                        TextEntry::make('country.name')->label('country'),
+                        TextEntry::make('state.name')->label('state'),
+                        TextEntry::make('city.name')->label('city'),
 
 
-        ])->columns(3),
 
-    ]);
+
+                    ])->columns(3),
+                Section::make('User Adress')
+                    ->schema([
+
+                        TextEntry::make('address')->label('address'),
+                        TextEntry::make('zip_code')->label('zip_code'),
+
+
+
+
+
+                    ])->columns(3),
+
+            ]);
 
     }
 
@@ -167,12 +167,12 @@ class EmployeeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('first_name')
-                ->searchable(),
-            Tables\Columns\TextColumn::make('last_name')
-                ->searchable(),
-            Tables\Columns\TextColumn::make('middle_name')
-                ->searchable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('last_name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('middle_name')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('country.name')
                     ->numeric()
                     ->sortable()
@@ -213,44 +213,44 @@ class EmployeeResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('Department')
-                ->relationship('department','name')
-                ->searchable()
-                ->preload()
-                ->label('Filter by Department')
-                ->indicator('Department'),
-              Filter::make('created_at')
-    ->form([
-        DatePicker::make('created_from'),
-        DatePicker::make('created_until'),
-    ])
-    ->query(function (Builder $query, array $data): Builder {
-        return $query
-            ->when(
-                $data['created_from'],
-                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-            )
-            ->when(
-                $data['created_until'],
-                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-            );
-    })
-    ->indicateUsing(function (array $data): array {
-        $indicators = [];
+                    ->relationship('department', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->label('Filter by Department')
+                    ->indicator('Department'),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from'),
+                        DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
 
-        if ($data['from'] ?? null) {
-            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
-                ->removeField('from');
-        }
+                        if ($data['from'] ?? null) {
+                            $indicators[] = Indicator::make('Created from ' . Carbon::parse($data['from'])->toFormattedDateString())
+                                ->removeField('from');
+                        }
 
-        if ($data['until'] ?? null) {
-            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
-                ->removeField('until');
-        }
+                        if ($data['until'] ?? null) {
+                            $indicators[] = Indicator::make('Created until ' . Carbon::parse($data['until'])->toFormattedDateString())
+                                ->removeField('until');
+                        }
 
-        return $indicators;
-    })->columnSpan(2)->columns(2)
+                        return $indicators;
+                    })->columnSpan(2)->columns(2)
 
-])
+            ])
 
 
 
@@ -277,7 +277,7 @@ class EmployeeResource extends Resource
         return [
             'index' => Pages\ListEmployees::route('/'),
             'create' => Pages\CreateEmployee::route('/create'),
-            'view' => Pages\ViewEmployee::route('/{record}'),
+            // 'view' => Pages\ViewEmployee::route('/{record}'),
             'edit' => Pages\EditEmployee::route('/{record}/edit'),
         ];
     }
