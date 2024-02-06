@@ -27,6 +27,7 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
+use Filament\Notifications\Notification;
 
 class EmployeeResource extends Resource
 {
@@ -288,6 +289,13 @@ class EmployeeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotification(
+                        Notification::make()
+                 ->success()
+                 ->title('Employee Deleted')
+                 ->body('You have successfully Deleted a employee')
+                       )
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
